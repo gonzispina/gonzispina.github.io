@@ -5,11 +5,11 @@ Static portfolio and CV published at `gonzalospina.com`.
 ## Local preview
 
 ```sh
-python3 -m http.server 8765 --directory site
+python3 -m http.server 8765 --directory docs
 ```
 
 Open `http://127.0.0.1:8765`.
 
 ## Deployment
 
-The GitHub Actions workflow deploys the contents of `site/` to GitHub Pages whenever changes reach `main`.
+GitHub Pages publishes the `docs/` directory from the `main` branch. No build step is required.

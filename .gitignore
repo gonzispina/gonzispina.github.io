@@ -1,12 +1,12 @@
 .DS_Store
-site/.DS_Store
+docs/.DS_Store
 
 # Local server and deployment artefacts
 dist/
 .openai/
 
 # Superseded EMG recordings kept locally, but not part of the published site.
-site/assets/emg-continous-decoding-demo-16-34-57.mp4
-site/assets/emg-continous-decoding-demo-17-24-31.mp4
-site/assets/emg-continous-decoding-online-demo.mov
-site/assets/emg-continous-decoding-target-demo.mov
+docs/assets/emg-continous-decoding-demo-16-34-57.mp4
+docs/assets/emg-continous-decoding-demo-17-24-31.mp4
+docs/assets/emg-continous-decoding-online-demo.mov
+docs/assets/emg-continous-decoding-target-demo.mov
