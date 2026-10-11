@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="An Arduino-based surface EMG prototype for online index-finger movement decoding.">
+  <title>EMG-based continuous decoding · Gonzalo Spina</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="case-study" data-page="emg">
+<header data-site-header></header>
+<main class="wrap" id="top">
+  <div class="eyebrow">Neurotechnology · biosignals</div>
+  <h1>EMG-based continuous movement decoding</h1>
+  <p class="lead">A self-built Arduino setup and causal temporal convolutional network for predicting index-finger movement from two surface-EMG channels.</p>
+  <div class="meta"><span>Arduino Uno prototype</span><span>Online inference</span></div>
+  <div class="project-tags" aria-label="Project topics"><span>Deep learning</span><span>Neuroscience</span><span>Signal processing</span></div>
+  <div class="project-source"><span>Code and reproducibility</span><github-link href="https://github.com/gonzispina/emg-finger-prediction"></github-link></div>
+
+  <figure class="demo-hero">
+    <video controls preload="metadata">
+      <source src="../assets/emg-continous-decoding-demo-16-34-57-trimmed.mp4" type="video/mp4">
+    </video>
+    <figcaption>Online inference from surface EMG.</figcaption>
+    <p class="note">Silent recording: the video shows the finger and the red prediction marker, without a face or audio. The model follows slow and fast movements, broad and short excursions, and visibly discriminates index-finger activity from middle-finger activity in one segment.</p>
+  </figure>
+
+  <section id="instrument"><h2>The question was simple</h2>
+    <p>Can a low-cost, self-built setup capture enough information from forearm EMG to estimate continuous finger movement in real time?</p>
+    <p>The current project focuses on acquisition, supervised target construction and online prediction.</p>
+    <div class="setup-layout">
+      <div class="setup-photos"><figure><a href="../assets/emg-continous-decoding-setup-arduino.jpg" target="_blank" rel="noopener"><img src="../assets/emg-continous-decoding-setup-arduino.jpg" alt="Arduino Uno, EMG electrodes, amplifiers and two spring-loaded joysticks"></a><figcaption>Arduino, joysticks and the collection setup.</figcaption></figure><figure><a href="../assets/emg-continous-decoding-signal-amplifiers.jpg" target="_blank" rel="noopener"><img src="../assets/emg-continous-decoding-signal-amplifiers.jpg" alt="Signal amplifiers and wiring mounted inside the prototype enclosure"></a><figcaption>Signal amplifiers and wiring inside the enclosure.</figcaption></figure></div>
+      <div><h2 class="minor-heading">The instrument</h2><p>Two surface-EMG channels record the index-finger flexor and extensor. Two spring-loaded joysticks provide a movement reference during data collection. An Arduino Uno samples the channels at approximately 606 Hz.</p><p class="quiet">The joystick signal is a supervised reference, not a natural or clinical ground truth.</p></div>
+    </div>
+  </section>
+
+  <section id="pipeline"><h2>From muscle activity to a position trace</h2>
+    <div class="signal-flow" aria-label="Signal processing pipeline"><span>Surface EMG</span><i>→</i><span>70–300 Hz causal filter</span><i>→</i><span>RMS envelopes + derivatives</span><i>→</i><span>Causal TCN</span><i>→</i><span>Predicted velocity</span><i>→</i><span>Leaky position display</span></div>
+    <p>The predictor is a causal Temporal Convolutional Network (TCN). Its dilated convolutions learn from recent EMG history while preventing the model from using future samples, which makes the same architecture usable for online inference.</p>
+    <p>The target is built offline from the two joystick traces, while the deployed feature extraction and inference remain causal.</p>
+    <div class="architecture-rationale"><h3>The architecture followed the signal analysis</h3><p><strong>Timing set the model context.</strong> Offline onset analysis showed that EMG consistently precedes joystick movement, but with different temporal distributions for flexion and extension. That evidence set the receptive field to span the hundreds of milliseconds needed to capture the relevant pre-movement activity rather than choosing a window arbitrarily.</p><p><strong>Features represent two time scales.</strong> A causal 70–300 Hz band-pass is followed by fast and slow RMS envelopes and their causal derivatives. The fast scale preserves movement onsets; the slow scale captures sustained activation.</p><p><strong>The training target was calibrated too.</strong> Early target smoothing attenuated fast movements too aggressively. Reducing that smoothing preserved their velocity peaks, so the TCN was trained against a target whose temporal structure better matched the movement being decoded.</p><p><strong>Signal calibration closed the offline–online gap.</strong> During collection, the spring-loaded joysticks require extra force and raise EMG amplitude relative to free movement. Models trained directly on those recordings could look acceptable offline but behave poorly online. Compressing training-time EMG peaks above each session’s resting baseline exposed the TCN to amplitudes closer to free online movement; this was the turning point for reliable live behavior, especially at slow movement speeds.</p></div>
+    <figure class="attenuation-figure"><img src="../assets/emg-continous-decoding-emg-attenuation.png" alt="Raw flexor RMS signal and the corresponding training-time compressed signal"><figcaption>Training-time EMG calibration.</figcaption><p class="note">The blue trace is the recorded flexor RMS during joystick collection. The compressed trace is used only during training to reduce spring-induced amplitude inflation; online inference uses the live signal without attenuation.</p></figure>
+    <p class="quiet">The selected checkpoint uses a receptive field on the order of several hundred milliseconds. The exact checkpoint and preprocessing commands are linked below.</p>
+  </section>
+
+  <section id="evidence"><h2>The benchmark is competitive</h2>
+    <p>The online behavior is the main result of this project. These two numbers summarize the current offline benchmark and help make the evaluation inspectable without standing in for the demo.</p>
+    <div class="metric-cards"><div><span class="metric">0.688</span><span class="metric-label">pooled validation R²</span></div><div><span class="metric">0.830</span><span class="metric-label">pooled Pearson correlation</span></div></div>
+    <div class="benchmark-explainer"><h3>What is being measured</h3><p>The model predicts normalized index-finger velocity from recent EMG. The recordings are divided into separate <strong>sessions</strong>: independent recording days or runs with a new setup of the electrodes and tasks. Each session contains several movement tasks so the evaluation is not dominated by a single easy trace.</p><div class="task-list"><div><strong>Slow and fast flexion/extension</strong><span>Large movements at different speeds.</span></div><div><strong>Intermediate holds</strong><span>Partial positions held against the joystick spring.</span></div><div><strong>Free controlled movement</strong><span>Continuous movement across the available range.</span></div><div><strong>Rest and other-finger controls</strong><span>Negative controls for unwanted or absent index movement.</span></div></div><p><strong>R²</strong> asks how much variance in the target velocity is explained by the prediction. <strong>Pearson correlation</strong> asks whether predicted and target traces follow the same temporal shape, even when their scale differs.</p><p class="quiet">For each task block within each session, the final 20% of windows is reserved for validation. The causal receptive field is respected so a training window cannot use signal from the future.</p></div>
+    <figure class="wide-figure"><img src="../assets/emg-continous-decoding-predictions.png" alt="Predicted and target velocity traces across movement tasks"><figcaption>Predictions across behavioral tasks.</figcaption><p class="note">The model follows the broad direction of the movement; holds remain harder because the spring-loaded joystick decouples force from position.</p></figure>
+    <div class="metric-figures"><figure><img src="../assets/emg-continous-decoding-r2-by-task.png" alt="R-squared by movement task"><figcaption>Task-level R².</figcaption><p class="note">R² is highest for fast flexion and free controlled movement. Microcorrections are harder, while intermediate holds are the clear low point.</p></figure><figure><img src="../assets/emg-continous-decoding-pearson-by-task.png" alt="Pearson correlation by movement task"><figcaption>Task-level Pearson correlation.</figcaption><p class="note">The same ordering appears in temporal alignment: the model tracks the shape of fast and free movements well, but captures holds less reliably.</p></figure></div>
+  </section>
+
+  <section id="demo"><h2>The online behavior is visible</h2>
+    <p>The recording below gives a second view of the same working setup. It begins with the joystick target shown in green; that reference is then removed so the online prediction can be read on its own.</p>
+    <div class="demo-list"><figure><video controls preload="metadata"><source src="../assets/emg-continous-decoding-demo-17-07-00.mp4" type="video/mp4"></video><figcaption>17-07-00 · target shown first, prediction shown independently afterward</figcaption></figure></div>
+  </section>
+
+  <section id="limits"><h2>What is established, and what comes next</h2>
+    <div class="limits-grid"><div><h3>Established</h3><ul><li>The model works reliably enough to follow slow, fast, broad and short movements online.</li><li>The causal TCN is compact enough for microcontroller deployment with reasonable response times.</li><li>The results are competitive for a low-spatial-resolution setup with a limited number of EMG channels.</li></ul></div><div><h3>Still open</h3><ul><li>Generalizing the problem from one finger to multiple fingers.</li><li>Understanding how additional electrodes and spatial information change the decoding problem.</li><li>Testing the same approach across a broader range of movement conditions and participants.</li></ul></div></div>
+  </section>
+
+  <details class="technical-notes"><summary>Technical notes</summary><div class="technical-spec"><div><span>Model</span><strong>36,769 parameters · causal dilated TCN</strong></div><div><span>Temporal context</span><strong>567 samples · approximately 935 ms</strong></div><div><span>Inputs</span><strong>8 features across flexor and extensor channels</strong></div><div><span>Target</span><strong>Joystick-derived velocity with task-dependent smoothing</strong></div></div><p>Inputs combine fast and slow RMS envelopes with their temporal derivatives. The full checkpoint configuration, training command and collection protocol are available in the repository.</p></details>
+  <footer data-site-footer></footer>
+</main><script src="../components.js"></script><script src="../app.js"></script>
+</body></html>
