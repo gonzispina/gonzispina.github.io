@@ -35,7 +35,7 @@
 // Confirm the official name of the neural circuits / behavior course.
 #section[Experience]
 #job(
-  position: "Technical Leader - Search Infrastructure",
+  position: "Sr. Software Engineer / Tech Lead - Search Infrastructure",
   institution: [Mercado Libre],
   location: "Argentina",
   date: "Jul 2025 - Present",
