@@ -81,7 +81,7 @@ The density $p_t(x)=p(t,x)$ of a diffusion contains all information about its di
 
 \begin{definition}[Infinitesimal generator]\label{def:generator}
 For a Markov diffusion $(X_t)_{t\geq0}$, its infinitesimal generator is the linear differential operator
-\[\mathcal A_t f(x)=\lim_{h\downarrow0}\frac{\E^x[f(X_{t+h})]-f(x)}{h},\]
+\[\mathcal A_t f(x)=\lim_{h\downarrow0}\frac{\E[f(X_{t+h})\mid X_t=x]-f(x)}{h},\]
 for functions $f$ for which the limit exists.
 \end{definition}
 It is the analogue of a derivative in ordinary calculus: it measures the instantaneous change of the expected observable $f(X_t)$.
@@ -101,7 +101,7 @@ For $f\in C^2(\R^d)$,
 \end{theorem}
 Dynkin's formula also provides the two Kolmogorov equations. The backward equation describes the expectation of a future observable conditional on the current state.
 \begin{theorem}[Backward Kolmogorov equation]\label{thm:backward}
-Let $X_t$ satisfy \eqref{eq:sde}, $T>0$, and $f\in C_b^2(\R^d)$. If $u^i$ and $a^{ij}=(\sigma\sigma^\top)^{ij}$ are Hölder continuous and $a$ is uniformly elliptic, then $v(t,x)=\E^x[f(X_T)]$ is the unique classical solution of
+Let $X_t$ satisfy \eqref{eq:sde}, $T>0$, and $f\in C_b^2(\R^d)$. If $u^i$ and $a^{ij}=(\sigma\sigma^\top)^{ij}$ are Hölder continuous and $a$ is uniformly elliptic, then $v(t,x)=\E[f(X_T)\mid X_t=x]$ is the unique classical solution of
 \[\frac{\partial v}{\partial t}(t,x)+\mathcal A_t v(t,x)=0,\qquad v(T,x)=f(x).\]
 \end{theorem}
 To obtain the equation for $p$, write Dynkin's formula against the density and differentiate:
@@ -122,13 +122,14 @@ So far we have followed a diffusion forward from its initial distribution. We no
 
 Define the time-reversed process by $\hat X_t=X_{T-t}$, $t\in[0,T]$. The non-trivial part is constructing a Brownian motion adapted to the decreasing filtration. Anderson~\cite{Anderson1982} proves that this construction yields the following reverse SDE.
 \begin{theorem}[Time reversal, Anderson]\label{thm:reverse}
-Suppose $u$ and $\sigma$ satisfy Theorem~\ref{thm:existence}, and that $X_t$ has a strictly positive density $p\in C^{1,2}([0,T]\times\R^d)$ satisfying \eqref{eq:fp}. Let $a=\sigma\sigma^\top$. Then there is a Brownian motion $\hat B_t$ for which $\hat X_t$ is a Markov diffusion satisfying
+Under the technical regularity, density, integrability, and uniqueness assumptions of Anderson's reverse-time result~\cite{Anderson1982}, let $a=\sigma\sigma^\top$. Then there is a Brownian motion $\hat B_t$ for which $\hat X_t$ is a Markov diffusion satisfying
 \begin{equation}\dd\hat X_t=\hat u(t,\hat X_t)\dd t+\hat\sigma(t,\hat X_t)\dd\hat B_t,\label{eq:reverse-sde}\end{equation}
 where
 \begin{align}\hat u^{\,i}(t,x)&=-u^i(T-t,x)+\frac{1}{p(T-t,x)}\partial_j\left[a^{ij}(T-t,x)p(T-t,x)\right],\label{eq:reverse-drift}\\
 \hat\sigma(t,x)&=\sigma(T-t,x).\nonumber\end{align}
 \end{theorem}
-\begin{proof}[Proof sketch]
+\begin{proof}[Formal outline]
+The following identifies the reverse coefficients but is not a self-contained proof of the pathwise time-reversal statement; that argument, including the conditions needed for the reversed Brownian motion, is due to Anderson~\cite{Anderson1982}.
 For $f\in C_0^2(\R^d)$, Bayes' rule expresses $\E[f(X_{T-t-h})\mid X_{T-t}=x]$ using the forward transition density and $p_{T-t-h}$. Differentiating in $h$, the backward Kolmogorov equation differentiates the transition density and Fokker--Planck differentiates $p_{T-t-h}$. Moving the generator by $L^2$ duality and taking $h\downarrow0$ yields
 \[\hat{\mathcal A}_t f(x)=\frac12a^{ij}(T-t,x)\partial_{ij}f(x)+\hat u^{\,i}(t,x)\partial_i f(x),\]
 with the drift in \eqref{eq:reverse-drift}.
