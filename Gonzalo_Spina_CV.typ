@@ -11,12 +11,13 @@
   pagecount: "true",
   date: "2026-10-04",
   contacts: (
-    (text: "LinkedIn", link: "https://www.linkedin.com/in/gonzalospina"),
-    (text: "GitHub", link: "https://github.com/gonzispina"),
+    (text: [#text(fill: rgb("0b63b6"))[LinkedIn]], link: "https://www.linkedin.com/in/gonzalospina"),
+    (text: [#text(fill: rgb("0b63b6"))[GitHub]], link: "https://github.com/gonzispina"),
   ),
 )
 #set document(author: "Gonzalo Josue Spina", title: "Gonzalo Spina - Research Engineering CV")
 #set text(size: 10pt)
+#show link: set text(fill: rgb("0b63b6"))
 
 #section[Profile]
 #descript[Software engineer with 10 years of experience building distributed systems, currently working on a large-scale search engine and ML infrastructure at Mercado Libre. Completing a Data Science degree at the University of Buenos Aires; seeking Research Engineer roles in neurotechnology and AI.]
