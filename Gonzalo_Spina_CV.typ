@@ -12,6 +12,7 @@
   date: "2026-10-04",
   contacts: (
     (text: "LinkedIn", link: "https://www.linkedin.com/in/gonzalospina"),
+    (text: "GitHub", link: "https://github.com/gonzispina"),
   ),
 )
 #set document(author: "Gonzalo Josue Spina", title: "Gonzalo Spina - Research Engineering CV")
@@ -52,7 +53,7 @@
 #block(breakable: false)[
 #job(
   position: "EMG-Based Continuous Movement Decoding",
-  institution: [Research engineering project], location: "", date: "Jun 2026",
+  institution: [Research engineering project · #link("https://gonzalospina.com/projects/emg-continous-decoding.html")[Project page]], location: "", date: "Jun 2026",
   description: [
     - Built an Arduino-based surface-EMG acquisition setup and collected original forearm EMG and movement data for continuous index-finger decoding.
     - Designed and trained a causal temporal convolutional network (TCN) for online inference, achieving $R^2 = 0.688$ and Pearson correlation $r = 0.830$ across movement tasks.
@@ -63,7 +64,7 @@
 #block(breakable: false)[
 #job(
   position: "Score-Based Generative Models & Stochastic Differential Equations",
-  institution: [Academic monograph and poster], location: "", date: "Jun 2026",
+  institution: [Academic monograph and poster · #link("https://gonzalospina.com/projects/score-based-diffusions.html")[Project page]], location: "", date: "Jun 2026",
   description: [
     - Wrote a monograph and poster on score-based generative models via Itô diffusions, Kolmogorov equations, infinitesimal generators and reverse-time SDEs.
   ],
@@ -82,7 +83,7 @@
 #block(breakable: false)[
 #job(
   position: "Predictive Modeling of Neural Population Activity",
-  institution: [Academic project], location: "", date: "Nov 2025",
+  institution: [Academic project · #link("https://gonzalospina.com/projects/olfactory-glm.html")[Project page]], location: "", date: "Nov 2025",
   description: [
     - Built Poisson GLMs for mouse stimulus-reward recordings using binary stimulus time series, target-neuron history and population-history covariates; evaluated predictive performance using held-out log-likelihood.
     - Found that stimulus identity improved held-out prediction and that population history added information in specific task conditions; temporal analysis did not establish a causal inhibitory link.
